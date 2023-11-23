@@ -1,0 +1,33 @@
+
+#include <SoftwareSerial.h>
+#include <Servo.h>
+#define servoPin 10
+SoftwareSerial BTSerial(2, 3); // BTSerial(Rx, Tx)
+Servo myservo;
+int BTstates=0;       // 블루투스 신호 상태 저장용 변수
+int currentVar=0 ;
+int previousVar=0;
+int readVar = 0;
+
+void setup()  {
+  Serial.begin(9600);
+  BTSerial.begin(38400);  
+  myservo.attach(servoPin);
+  pinMode(servoPin, OUTPUT);
+}
+
+void loop()  {  
+  if (BTSerial.available())  {    
+  // --- 수신되는 Var 값을 체크 후 서보 모터 구동 루틴 ---
+    currentVar=BTSerial.read();
+    Serial.println(currentVar);      
+      // 값을 ±4 이상의 변화에서만 모터가 작동되도록하여 떨림현상 제거(값 조정가능)
+      if ((currentVar > previousVar+4) or (currentVar < previousVar-4)) {
+        myservo.attach(servoPin);
+        myservo.write(currentVar); 
+        delay(35); 
+        previousVar = currentVar;        
+    }   
+    myservo.detach();   // 서보 모터 정지
+  } 
+}
