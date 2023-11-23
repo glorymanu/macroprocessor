@@ -1,0 +1,98 @@
+
+#include <SoftwareSerial.h>
+#include <Servo.h>
+
+//13
+//12
+//11
+//10 순으로 motor pin 연결
+#define pin_front 13
+#define pin_side 12
+#define pin_delt 11
+#define pin_elbow 10
+
+//4 digit 씩 4개 
+#define first_digit 1000000000000
+#define seceond_digit 100000000
+#define third_digit 10000
+
+SoftwareSerial BTSerial(2, 3);  // BTSerial(Rx, Tx)
+
+//servo object 생성
+Servo front;
+Servo side;
+Servo delt;
+Servo elbow;
+
+int BTstates = 0;  // 블루투스 신호 상태 저장용 변수
+
+static int temp_val = 0;  //읽은 값 임시 저장
+
+int cur_front = 0;
+int cur_side = 0;
+int cur_delt = 0;
+int cur_elbow = 0;
+
+static int prev_front = 0;
+static int prev_side = 0;
+static int prev_delt = 0;
+static int prev_elbow = 0;
+
+void setup() {
+  Serial.begin(9600);
+  BTSerial.begin(9600);
+
+  front.attach(pin_front);
+  side.attach(pin_side);
+  delt.attach(pin_delt);
+  elbow.attach(pin_elbow);
+
+  pinMode(pin_front, OUTPUT);
+  pinMode(pin_side, OUTPUT);
+  pinMode(pin_delt, OUTPUT);
+  pinMode(pin_elbow, OUTPUT);
+}
+
+
+//아마 이 함수에서 오류 날 듯, 오류나면, loop문에 하나씩 선언 해주는 수 밖에 없을 듯 
+//myservo를 어떻게 정의하면 될지 고민해보기
+
+void moveMotor(int cur_val, static int prev_val, myservo) {
+  // 값을 ±4 이상의 변화에서만 모터가 작동되도록하여 떨림현상 제거(값 조정가능)
+  if ((cur_val > prev_val + 4) | (cur_val < prev_val - 4)) {
+    // myservo.attach(pin_front);
+    myservo.write(cur_val); //
+    previousVar = cur_val;
+  }
+  myservo.detach();
+}
+
+
+void loop() {
+  if (BTSerial.available()) {
+    // --- 수신되는 Var 값을 체크 후 서보 모터 구동 루틴 ---
+    temp_val = BTSerial.read();
+    Serial.println(temp_val);  //값 출력해봄
+
+    cur_front = temp_val / first_digit;
+    temp_val = temp_val % first_digit;
+
+    cur_side = temp_val / second_digit;
+    temp_val = temp_val % second_digit;
+
+    cur_delt = temp_val / third_digit;
+    temp_val = temp_val % third_digit;
+
+    cur_elbow = temp_val;
+  }
+
+  moveMotor(cur_front, prev_front, front);
+  moveMotor(cur_side, prev_side);
+  moveMotor(cur_delt, prev_delt);
+  moveMotor(cur_elbow, prev_elbow);
+
+  front.detach();  // 서보 모터 정지
+  side.detach();
+  delt.detach();
+  elbow.detach();
+}
