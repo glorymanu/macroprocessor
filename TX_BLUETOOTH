@@ -1,0 +1,53 @@
+//bluetooth
+
+#include <SoftwareSerial.h>
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
+
+
+#define MIN_PULSE_WIDTH 650
+#define MAX_PULSE_WIDTH 2350
+#define FREQUENCY 50
+
+
+float angle = 0;
+
+SoftwareSerial btSerial(2, 3);  //TX, RX
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+
+int pot_test = A0;
+
+void setup() {
+
+  pwm.begin();
+  pwm.setPWMFreq(FREQUENCY);
+
+  Serial.begin(9600);
+  btSerial.begin(38400);
+}
+
+
+
+//pwm 만드는 함수
+int generate_pwm(int controlIn) {
+  int pulse_wide, pulse_width, potVal;
+
+  potVal = analogRead(controlIn);  //Read value of Potentiometer
+  pulse_wide = map(potVal, 800, 240, MIN_PULSE_WIDTH, MAX_PULSE_WIDTH);
+  pulse_width = int(float(pulse_wide) / 1000000 * FREQUENCY * 4096);  //Map Potentiometer position to Motor
+  return = pulse_width;                                               //pwm.setPWM(motorOut, 0, pulse_width);  //pulse width가 모터 각도 제어 => 각 모터 별로 moveMotor function 만들어주고, 안에 if 문 넣어서, 최대 각도 이상의 각도가 들어가면, 최대 각도에서 멈추도록 설정
+}
+
+void TX_pwm(int pwm) {
+
+  char Trans = pwm;
+  if (pwm != NULL) {
+    btSerial.write(Trans);
+  }
+}
+
+
+void loop() {
+
+  TX_pwm(generate_pwm(pot_test));
+}
