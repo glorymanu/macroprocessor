@@ -1,0 +1,43 @@
+#include <Wire.h>
+#include <SoftwareSerial.h>
+#include <Adafruit_PWMServoDriver.h>
+
+#define MIN_PULSE_WIDTH 650
+#define MAX_PULSE_WIDTH 2350
+#define FREQUENCY 50
+
+
+float angle = 0;
+
+SoftwareSerial btSerial(2, 3);
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+
+int driver_test = 15;
+
+
+void setup() {
+
+  pwm.begin();
+  pwm.setPWMFreq(FREQUENCY);
+
+  Serial.begin(9600);
+  btSerial.begin(38400);
+}
+
+void moveMotor(int motorOut, int pulse_width) {
+  pwm.setPWM(motorOut, 0, pulse_width);  //pulse width가 모터 각도 제어 => 각 모터 별로 moveMotor function 만들어주고, 안에 if 문 넣어서, 최대 각도 이상의 각도가 들어가면, 최대 각도에서 멈추도록 설정
+}
+
+void RX_pwm(int driver_test) {
+  if (btSerial.available()) {
+    char received = btSerial.read();
+    int pulse_width = received;
+  }
+
+  moveMotor(driver_test, pulse_width);
+}
+
+
+void loop() {
+  RX_pwm(driver_test);
+}
