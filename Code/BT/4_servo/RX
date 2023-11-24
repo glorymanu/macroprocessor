@@ -10,6 +10,8 @@
 #define pin_delt 11
 #define pin_elbow 10
 
+#define num_of_joint 4
+
 //4 digit 씩 4개
 #define first_digit 1000000000000
 #define second_digit 100000000
@@ -23,9 +25,7 @@ Servo side;
 Servo delt;
 Servo elbow;
 
-int BTstates = 0;  // 블루투스 신호 상태 저장용 변수
-
-static int temp_val = 0;  //읽은 값 임시 저장
+static int temp_val = 0;  //읽은 값 임시 저장 (1개만 필요)
 
 int cur_front = 0;
 int cur_side = 0;
@@ -39,7 +39,7 @@ static int prev_elbow = 0;
 
 void setup() {
   Serial.begin(9600);
-  BTSerial.begin(9600);
+  BTSerial.begin(38400);
 
   front.attach(pin_front);
   side.attach(pin_side);
@@ -56,15 +56,14 @@ void setup() {
 //아마 이 함수에서 오류 날 듯, 오류나면, loop문에 하나씩 선언 해주는 수 밖에 없을 듯
 //myservo를 어떻게 정의하면 될지 고민해보기
 
-void moveMotor(int cur_val, int prev_val, Servo &myservo) {
+void moveMotor(int cur_val, int prev_val, Servo &name, int servo_pin_name) {
   // 값을 ±4 이상의 변화에서만 모터가 작동되도록하여 떨림현상 제거(값 조정가능)
   if ((cur_val > prev_val + 4) | (cur_val < prev_val - 4)) {
-    // myservo.attach(pin_front);
-    myservo.write(cur_val);  //
+    name.attach(servo_pin_name);
+    name.write(cur_val);  //
     prev_val = cur_val;
   }
-  Serial.print("prev_val:")
-    Serial.println(prev_val);
+  name.detach();
 }
 
 
@@ -75,6 +74,7 @@ void loop() {
     Serial.print("temp_val:");
     Serial.println(temp_val);  //값 출력해봄
 
+    //각 자리수별로 읽힌 값 출력
     cur_front = temp_val / first_digit;
     temp_val = temp_val % first_digit;
 
@@ -87,13 +87,8 @@ void loop() {
     cur_elbow = temp_val;
   }
 
-  moveMotor(cur_front, prev_front, front);
-  moveMotor(cur_side, prev_side, side);
-  moveMotor(cur_delt, prev_delt, delt);
-  moveMotor(cur_elbow, prev_elbow, elbow);
-
-  // front.detach();  // 서보 모터 정지
-  // side.detach();
-  // delt.detach();
-  // elbow.detach();
+  moveMotor(cur_front, prev_front, front, pin_front);
+  moveMotor(cur_side, prev_side, side, pin_side);
+  moveMotor(cur_delt, prev_delt, delt, pin_delt);
+  moveMotor(cur_elbow, prev_elbow, elbow, pin_elbow);
 }
