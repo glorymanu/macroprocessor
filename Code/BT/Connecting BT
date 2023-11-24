@@ -1,3 +1,5 @@
+//블루투스 연결용
+
 #include <SoftwareSerial.h>
 
 SoftwareSerial btSerial(2, 3);
