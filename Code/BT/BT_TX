@@ -1,4 +1,3 @@
-
 #include <SoftwareSerial.h>
 #define pot_test A0
 SoftwareSerial BTSerial(2, 3); // BTSerial(Rx, Tx)
