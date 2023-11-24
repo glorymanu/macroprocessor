@@ -1,27 +1,28 @@
 #include <SoftwareSerial.h>
 #include <Servo.h>
-#define servoPin 10
+#define frontPin 10
 SoftwareSerial BTSerial(2, 3);  // BTSerial(Rx, Tx)
 Servo front;                    //servo object 생성
-int BTstates = 0;               // 블루투스 신호 상태 저장용 변수
+
 int currentVar = 0;
 static int previousVar = 0;
 
 void setup() {
   Serial.begin(9600);
   BTSerial.begin(38400);
-  front.attach(servoPin);
+  // front.attach(servoPin); //attach 필요한지 테스트
   pinMode(servoPin, OUTPUT);
 }
 
-//moveMotor(currentVar, previousVar, front); 형태로 사용하면 됨
-void moveMotor(int cur_val, int prev_val, Servo &part) {
+//사용법: moveMotor(currentVar, previousVar, front, servoPin); 형태로 사용하면 됨
+void moveMotor(int cur_val, int prev_val, Servo &part, int pin) {
   // 값을 ±4 이상의 변화에서만 모터가 작동되도록하여 떨림현상 제거(값 조정가능)
   if ((cur_val > prev_val + 4) || (cur_val < prev_val - 4)) {
-    // myservo.attach(pin_front);
-    part.write(cur_val);  //
+    part.attach(pin);
+    part.write(cur_val);
     previousVar = cur_val;
   }
+  part.detach();
 }
 
 
@@ -30,7 +31,7 @@ void loop() {
   if (BTSerial.available()) {
     // --- 수신되는 Var 값을 체크 후 서보 모터 구동 루틴 ---
     currentVar = BTSerial.read();
-    Serial.println(currentVar);  //값 출력해보기
-    moveMotor(currentVar, previousVar, front);
+    Serial.println(currentVar);  
+    moveMotor(currentVar, previousVar, front, frontPin);
   }
 }
