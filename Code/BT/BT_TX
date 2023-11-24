@@ -1,18 +1,18 @@
 #include <SoftwareSerial.h>
 #define pot_test A0
-SoftwareSerial BTSerial(2, 3); // BTSerial(Rx, Tx)
+SoftwareSerial BTSerial(2, 3);  // BTSerial(Rx, Tx)
 
 int readVar = 0;
 
-void setup()  {
+void setup() {
   Serial.begin(9600);
-  BTSerial.begin(38400);  
-
+  BTSerial.begin(38400);
 }
-void loop()  {
-//--- VAR 값을 체크 후 LED Fade In/Out과 서보모터 구동용 BT신호 발송 
-  readVar = map(analogRead(pot_test),0,1023,0,179); //서보모터 각도(0~180도)
+void loop() {
+  //--- VAR 값을 체크 후 LED Fade In/Out과 서보모터 구동용 BT신호 발송
+  readVar = map(analogRead(pot_test), 0, 1023, 0, 179);  //서보모터 각도(0~180도)
 
   Serial.println(readVar);
-  BTSerial.write(readVar);  //int를 쏴도 되는 듯    
+  BTSerial.write(readVar);  //int를 쏴도 되는 듯
+  delay(40);
 }
