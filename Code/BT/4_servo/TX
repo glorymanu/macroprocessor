@@ -1,0 +1,26 @@
+#include <SoftwareSerial.h>
+
+#define front A0
+#define side A1
+#define delt A2
+#define elbow A3
+
+SoftwareSerial BTSerial(2, 3);  // BTSerial(Rx, Tx)
+
+void setup() {
+  Serial.begin(9600);
+  BTSerial.begin(38400);
+}
+void loop() {
+
+  int front_val = map(analogRead(front), 0, 1023, 0, 179);  //서보모터 각도(0~180도)
+  int side_val = map(analogRead(side), 0, 1023, 0, 179);
+  int delt_val = map(analogRead(delt), 0, 1023, 0, 179);
+  int elbow_val = map(analogRead(elbow), 0, 1023, 0, 179);
+
+  int val_total = front * 1000000000000 + side * 100000000 + delt * 10000 + elbow;
+
+  Serial.println(val_total);
+  BTSerial.write(val_total);  //int를 쏴도 되는 듯
+  delay(40);
+}
