@@ -21,27 +21,27 @@ void setup() {
 }
 
 void loop() {
-  int pushed = digitalWrite(push_button);
+  // int pushed = digitalWrite(push_button);
 
 
-  //홀수번 눌리면 시작, 짝수번 눌리면 종료
-  if (pushed == 0) {
-    state = !state;
+  // //홀수번 눌리면 시작, 짝수번 눌리면 종료
+  // if (pushed == 0) {
+  //   state = !state;
+  // }
+
+  // while (!state)
+  //   ;
+
+  int front_val = map(analogRead(front), 0, 1023, 2, 178);  //서보모터 각도(0~180도)
+  int side_val = map(analogRead(side), 0, 1023, 2, 178);
+  int delt_val = map(analogRead(delt), 0, 1023, 2, 178);
+  int elbow_val = map(analogRead(elbow), 0, 1023, 2, 178);
+
+  int val[4] = {front_val, side_val, delt_val, elbow_val};
+
+  for(int i = 0; i<4; i++){
+  Serial.println(val[i]);
+  BTSerial.write((byte)val[i]);  //int를 쏴도 되는 듯
   }
-
-  while (!state)
-    ;
-
-
-
-  int front_val = map(analogRead(front), 0, 1023, 0, 179);  //서보모터 각도(0~180도)
-  int side_val = map(analogRead(side), 0, 1023, 0, 179);
-  int delt_val = map(analogRead(delt), 0, 1023, 0, 179);
-  int elbow_val = map(analogRead(elbow), 0, 1023, 0, 179);
-
-  int val_total = front * 1000000000000 + side * 100000000 + delt * 10000 + elbow;
-
-  Serial.println(val_total);
-  BTSerial.write(val_total);  //int를 쏴도 되는 듯
-  delay(40);
+delay(40);
 }
