@@ -153,3 +153,4 @@ void servoMove(byte color) {
   arm2.write(140);
   grip.write(140);
   delay(500);
+}
