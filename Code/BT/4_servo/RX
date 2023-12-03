@@ -23,6 +23,7 @@ Servo front;
 Servo side;
 Servo delt;
 Servo elbow;
+Servo gripper;
 
 int val[num_of_joint];
 
