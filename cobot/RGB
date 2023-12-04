@@ -8,6 +8,7 @@ Servo grip;
 
 const int piezoPin = 12; // 피에조 부저 핀
 const int sensorPin = A0; // TCS3200 센서 출력 핀
+const int forcePin = A1; // 외부력 감지 센서 핀
 
 void setup() {
   Serial.begin(9600);
@@ -19,6 +20,7 @@ void setup() {
   grip.attach(13);
 
   pinMode(piezoPin, OUTPUT);
+  pinMode(forcePin, INPUT);
 }
 
 void loop() {
