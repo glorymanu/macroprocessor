@@ -30,7 +30,7 @@ void loop() {
 
   for (int i = 0; i < NUM_PIN; i++) {
     Serial.println(val[i]);
-    BTSerial.write((byte)val[i]);  //int를 쏴도 되는 듯
+    BTSerial.write((byte)val[i]);  
   }
   delay(40);
 }
