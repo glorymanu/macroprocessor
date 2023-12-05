@@ -24,7 +24,7 @@ pinMode(pin_switch, INPUT_PULLUP);
 void loop() {
 
 int val[NUM_PIN] = {0, 0, 0, 0, 0};
-boolean state = digitalRead(pin_switch);
+int state = digitalRead(pin_switch);
 
 while(1 && state){} //;로도 해보기
 
