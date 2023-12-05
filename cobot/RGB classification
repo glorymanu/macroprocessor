@@ -82,11 +82,41 @@ void servoMove(byte color) {
 
   // 예시:
   if (color == 1) { // 빨간색
+    // 1. 팔을 뻗어 공을 집습니다.
     shoulderFront.write(130);
     shoulderSide.write(87);
     shoulderDelt.write(330);
     elbow.write(378);
     grip.write(140);
+    delay(2000);
+
+    // 2. 공을 들어 올립니다.
+    shoulderFront.write(130);
+    shoulderSide.write(87);
+    shoulderDelt.write(330);
+    elbow.write(180);
+    delay(2000);
+
+    // 3. 공을 분류기 상단에 올려놓습니다.
+    shoulderFront.write(130);
+    shoulderSide.write(87);
+    shoulderDelt.write(330);
+    elbow.write(180);
+    delay(2000);
+
+    // 4. 팔을 내립니다.
+    shoulderFront.write(130);
+    shoulderSide.write(87);
+    shoulderDelt.write(330);
+    elbow.write(378);
+    delay(2000);
+
+    // 5. 공을 놓습니다.
+    grip.write(0);
+    delay(2000);
+  }
+
+
     // 추가적으로 움직임이 필요한 경우 추가
   } else if (color == 2) { // 초록색
     // 다른 색깔에 대한 동작 추가
