@@ -1,0 +1,31 @@
+#include <SoftwareSerial.h>
+
+#define pin_switch 8
+#define pin_haptics 6
+
+SoftwareSerial BTSerial(2, 3); //RX TX
+
+void setup() {
+Serial.begin(9600);
+BTSerial.begin(38400);
+pinMode(pin_switch, INPUT_PULLUP);
+pinMode(pin_haptics, OUTPUT);
+}
+
+void loop() {
+int state_switch = digitalRead(pin_switch);
+int state_gripper = 0;
+
+BTSerial.write(state); // 스위치 on이면 0이 쏴짐
+
+if(BTSerial.available()){
+state_gripper = BTSerial.read(); // 떨구면 1이 들어옴
+}
+
+digitalWrite(pin_haptics, state_gripper); //haptic sensor input이 1이라고 가정하여 사용
+}
+
+
+
+
+
