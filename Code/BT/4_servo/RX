@@ -1,18 +1,16 @@
 #include <SoftwareSerial.h>
 #include <Servo.h>
 
-//초기화 동시에 해야 순서대로 들어감
-//진동 잡아
 
 //13
 //12
 //11
-//10 순으로 motor pin 연결
+//10 순으로 motor pin 연결, pwm pin인지 확인
 #define pin_front 13
 #define pin_side 12
 #define pin_delt 11
 #define pin_elbow 10
-#define pin_gripper 6
+#define pin_gripper 9
 
 #define num_of_joint 5
 
@@ -24,8 +22,6 @@ Servo side;
 Servo delt;
 Servo elbow;
 Servo gripper;
-
-int val[num_of_joint];
 
 int cur_front = 0;
 int cur_side = 0;
@@ -54,6 +50,8 @@ void setup() {
   pinMode(pin_delt, OUTPUT);
   pinMode(pin_elbow, OUTPUT);
   pinMode(pin_gripper, OUTPUT);
+
+
 }
 
 
@@ -69,6 +67,8 @@ void moveMotor(int cur_val, int prev_val, Servo &name, int pin_name) {
 }
 
 void loop() {
+
+int val[num_of_joint] = { 0, 0, 0, 0, 0, 0};
 
 
   if (BTSerial.available() >= num_of_joint) {  // 5 바이트를 받아오기 위해 확인
