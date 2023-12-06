@@ -1,122 +1,139 @@
-#include <Servo.h>
+#include <Servo.h> 
+#include <SoftwareSerial.h>
+Servo motor1;
+Servo motor2;
+Servo motor3;
 
-Servo shoulderFront;
-Servo shoulderSide;
-Servo shoulderDelt;
-Servo elbow;
-Servo grip;
+SoftwareSerial btSerial(2, 3); //RX TX
 
 int s0=3,s1=4; //s0, S1 주파수 스케일 설정핀
 int s2=5,s3=6; //RGB 색감지 선택 설정핀
 int OutPut=2;
 long f_Red, f_Green, f_Blue;
 
+int ir_pin = 7; // 적외선 센서 핀
+int state = 0; // 물체가 떨어졌는지 여부
+
 void setup(){
-  shoulderFront.attach(11); // 11번핀 : 회전 제어 서보모터
-  shoulderSide.attach(12); // 12번핀 : 상하 제어 서보모터
-  shoulderDelt.attach(13); // 13번핀 : 집게 제어 서보모터
-  elbow.attach(14);
-  grip.attach(15);
+  motor1.attach(11); // 11번핀 : 회전 제어 서보모터
+  motor2.attach(12); // 12번핀 : 상하 제어 서보모터
+  motor3.attach(13); // 13번핀 : 집게 제어 서보모터
 
-  shoulderFront.write(50);   //회전 제어 서보모터 초기값
-  shoulderSide.write(100); //상하 제어 서보모터 초기값
-  shoulderDelt.write(90);   //집게 제어 서보모터 초기값
-  elbow.write(90);
-  grip.write(10);
+  motor1.write(50);  //회전 제어 서보모터 초기값
+  motor2.write(100); //상하 제어 서보모터 초기값
+  motor3.write(90);  //집게 제어 서보모터 초기값
 
-  Serial.begin(9600);
-  pinMode(s0, 1);
-  pinMode(s1, 1);
-  pinMode(s2, 1);
-  pinMode(s3, 1);
+    Serial.begin(9600);
+    btSerial.begin(38400);
+    pinMode(s0, 1);
+    pinMode(s1, 1);
+    pinMode(s2, 1);
+    pinMode(s3, 1);
 
-  digitalWrite(s0,1);//주파수 스케일 100%
-  digitalWrite(s1,1);//주파수 스케일 100%
-  analogWrite(7,0);
-  pinMode(8, 2); //버튼 스위치
+    digitalWrite(s0,1);//주파수 스케일 100%
+    digitalWrite(s1,1);//주파수 스케일 100%
+    analogWrite(7,0);
+    pinMode(8, 2); //버튼 스위치
 }
-
 void loop(){
 
-  analogWrite(7,255);
-  Serial.print("Red=");
-  digitalWrite(s2,0); //Red 감지 설정
-  digitalWrite(s3,0); //Red 감지 설정
-  f_Red = 1000000/pulseIn(OutPut, 1);// 빨간 빛을 감지해 출력된 주파수값
-  Serial.print(f_Red);
-  Serial.print(" ");
-  delay(200);
+    analogWrite(7,255);
+    Serial.print("Red=");
+    digitalWrite(s2,0); //Red 감지 설정
+    digitalWrite(s3,0); //Red 감지 설정
+    f_Red = 1000000/pulseIn(OutPut, 1);// 빨간 빛을 감지해 출력된 주파수값
+    Serial.print(f_Red);
+    Serial.print("  ");
+    delay(200);
 
-  Serial.print("Blue=");
-  digitalWrite(s2,0); //Blue 감지 설정
-  digitalWrite(s3,1); //Blue 감지 설정
-  f_Blue = 1000000/pulseIn(OutPut, 1);// 파란 빛을 감지해 출력된 주파수값
-  Serial.print(f_Blue);
-  Serial.print(" ");
-  delay(200);
+    Serial.print("Blue=");
+    digitalWrite(s2,0); //Blue 감지 설정
+    digitalWrite(s3,1); //Blue 감지 설정
+    f_Blue = 1000000/pulseIn(OutPut, 1);// 파란 빛을 감지해 출력된 주파수값
+    Serial.print(f_Blue);
+    Serial.print("  ");
+    delay(200);
 
-  Serial.print("Green=");
-  digitalWrite(s2,1); //Green 감지 설정
-  digitalWrite(s3,1); //Green 감지 설정
-  f_Green = 1200000/pulseIn(OutPut, 1);// 초록 빛을 감지해 출력된 주파수값
-  Serial.print(f_Green);
-  Serial.println(" ");
-  delay(200);
-  analogWrite(7,0);
+    Serial.print("Green=");
+    digitalWrite(s2,1); //Green 감지 설정
+    digitalWrite(s3,1); //Green 감지 설정
+    f_Green = 1200000/pulseIn(OutPut, 1);// 초록 빛을 감지해 출력된 주파수값
+    Serial.print(f_Green);
+    Serial.println("  ");
+    delay(200);
+    analogWrite(7,0);
 
-  if (f_Red>f_Green && f_Red>f_Blue){
-    red_ball(); //빨간공 분류하기
-  }
-  if (f_Green>f_Red && f_Green>f_Blue){
-    green_ball(); //초록공 분류하기
-  }
-  if (f_Blue>f_Green && f_Blue>f_Red){
-    blue_ball(); //파란공 분류하기
-  }
+    if (f_Red>f_Green && f_Red>f_Blue){
+      red_ball(); //빨간공 분류하기
+    }
+    if (f_Green>f_Red && f_Green>f_Blue){
+      green_ball(); //초록공 분류하기
+    }
+    if (f_Blue>f_Green && f_Blue>f_Red){
+      blue_ball(); //파란공 분류하기
+    }    
 
+    // 적외선 센서 값으로 state 값 설정
+    int ir_value = analogRead(ir_pin);
+    if (ir_value > 100) {
+      state = 1;
+    } else {
+      state = 0;
+    }
+
+    // state 값을 블루투스로 송신
+    
+    btSerial.println(state);
+
+    // 공이 떨어졌을 경우
+    if (state == 1) {
+      // 동작 정지
+      motor1.write(90);
+      motor2.write(100);
+      motor3.write(90);
+    }
+        
 }
 
 void red_ball(){ //빨간공 분류하기(각도 값은 임의 조절 가능)
-  shoulderFront.write(110);delay(1000);
-  for (int i=100; i<145; i++){ shoulderSide.write(i);delay(20);}
-  shoulderFront.write(90);delay(1000);
-  for (int i=145; i>100; i--){ shoulderSide.write(i);delay(20);}
-  for (int i=50; i<100; i++){ shoulderFront.write(i);delay(20);}
-  for (int i=100; i<145; i++){ shoulderSide.write(i);delay(20);}
-  shoulderFront.write(110);delay(100);
-  shoulderFront.write(90);delay(1000);
-  shoulderSide.write(100);delay(1000);
-  shoulderFront.write(50);delay(1000);
+ motor3.write(110);delay(1000);
+ for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
+ motor3.write(90);delay(1000);
+ for (int i=145; i>100; i--){ motor2.write(i);delay(20);}
+ for (int i=50; i<100; i++){ motor1.write(i);delay(20);}
+ for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
+ motor3.write(110);delay(100);
+
+ motor3.write(90);delay(1000);
+
+ motor2.write(100);delay(1000);
+ // 사이사이에 state를 polling해주기
+ motor1.write(50);delay(1000); 
 }
 
-void green_ball(){ //빨간공 분류하기(각도 값은 임의 조절 가능)
-  shoulderFront.write(110);delay(1000);
-  for (int i=100; i<145; i++){ shoulderSide.write(i);delay(20);}
-  shoulderFront.write(90);delay(1000);
-  for (int i=145; i>100; i--){ shoulderSide.write(i);delay(20);}
-  for (int i=50; i<100; i++){ shoulderFront.write(i);delay(20);}
-  for (int i=100; i<145; i++){ shoulderSide.write(i);delay(20);}
-  shoulderFront.write(110);delay(100);
-  shoulderFront.write(90);delay(1000);
-  shoulderSide.write(100);delay(1000);
-  shoulderFront.write(50);delay(1000);
+void green_ball(){ //초록공 분류하기(각도 값은 임의 조절 가능)
+ motor3.write(110);delay(1000);
+ for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
+ motor3.write(90);delay(1000);
+ for (int i=145; i>100; i--){ motor2.write(i);delay(20);}
+ for (int i=50; i<130; i++){ motor1.write(i);delay(20);}
+ for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
+ motor3.write(110);delay(100);
+ motor3.write(90);delay(1000);
+ motor2.write(100);delay(1000);
+ motor1.write(50);delay(1000); 
 }
 
-void blue_ball(){ //빨간공 분류하기(각도 값은 임의 조절 가능)
-  shoulderFront.write(110);delay(1000);
-  for (int i=100; i<145; i++){ shoulderSide.write(i);delay(20);}
-  shoulderFront.write(90);delay(1000);
-  for (int i=145; i>100; i--){ shoulderSide.write(i);delay(20);}
-  for (int i=50; i<100; i++){ shoulderFront.write(i);delay(20);}
-  for (int i=100; i<145; i++){ shoulderSide.write(i);delay(20);}
-  shoulderFront.write(110);delay(100);
-  shoulderFront.write(90);delay(1000);
-  shoulderSide.write(100);delay(1000);
-  shoulderFront.write(50);delay(1000);
+void blue_ball(){ //파란공 분류하기(각도 값은 임의 조절 가능)
+ motor3.write(110);delay(1000);
+ for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
+ motor3.write(90);delay(1000);
+ for (int i=145; i>100; i--){ motor2.write(i);delay(20);}
+ for (int i=50; i<160; i++){ motor1.write(i);delay(20);}
+ for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
+ motor3.write(110);delay(100);
+ motor3.write(90);delay(1000);
+ motor2.write(100);delay(1000);
+ motor1.write(50);delay(1000);  
 }
-  // (외부력을 감지하는 부분)
 
-  // 예시: 가변저항의 값이 특정 범위를 벗어나면 외부력으로 간주
-  int forceSensorValue = analogRead(A1); // 가변저항의 핀에 연결된 아날로그 핀
-  return (forceSensorValue < 100 || forceSensorValue > 900); // 값은 상황에 따라 조절
-}
