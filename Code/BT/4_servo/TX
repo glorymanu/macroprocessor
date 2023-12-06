@@ -8,7 +8,7 @@
 #define elbow A3
 #define gripper A4
 
-#define NUM_JOINT 5 //joint로 바꾸기
+#define NUM_JOINT 5
 
 #define pin_switch 7
 
@@ -18,27 +18,54 @@ SoftwareSerial BTSerial(2, 3);  // BTSerial(Rx, Tx)
 void setup() {
   Serial.begin(9600);
   BTSerial.begin(38400);
-pinMode(pin_switch, INPUT_PULLUP);
+  pinMode(pin_switch, INPUT_PULLUP);
 }
 
 void loop() {
 
-int val[NUM_PIN] = {0, 0, 0, 0, 0};
-int state = digitalRead(pin_switch);
+  int val[NUM_JOINT] = { 0, 0, 0, 0, 0 };
+  int state = digitalRead(pin_switch);
 
-while(1 && state){} //;로도 해보기
+  if (state == 0) {  //;로도 해보기
 
-  int front_val = map(analogRead(front), 0, 1023, 2, 178);  //서보모터 각도(0~180도)
-  int side_val = map(analogRead(side), 0, 1023, 2, 178);
-  int delt_val = map(analogRead(delt), 0, 1023, 2, 178);
-  int elbow_val = map(analogRead(elbow), 0, 1023, 2, 178);
-  int gripper_val = map(analogRead(gripper), 0, 1023, 2, 178);
+    // Serial.println(state);
+    int front_val = map(analogRead(front), 28, 830, 2, 178);  //서보모터 각도(0~180도)
+    int side_val = map(analogRead(side), 28, 830, 2, 178);
+    int delt_val = map(analogRead(delt), 28, 830, 2, 178);
+    int elbow_val = map(analogRead(elbow), 28, 830, 2, 178);
+    int gripper_val = map(analogRead(gripper), 28, 830, 2, 178);
 
-  val[NUM_PIN] = { front_val, side_val, delt_val, elbow_val, gripper_val };
+if(front_val<0){
+  front_val = 0;
+}
+if(side_val<0){
+  side_val = 0;
+}
+ 
+ if(delt_val<0){
+  delt_val = 0;
+}
+ 
+ if(elbow_val<0){
+  elbow_val = 0;
+}
+ 
+ if(gripper_val<0){
+  gripper_val = 0;
+}
+ 
+    val[0] = front_val;
+    val[1] = side_val;
+    val[2] = elbow_val;
+    val[3] = delt_val;
+    val[4] = gripper_val;
 
-  for (int i = 0; i < NUM_JOINT; i++) {
-    Serial.println(val[i]);
-    BTSerial.write((byte)val[i]);  
+    for (int i = 0; i < NUM_JOINT; i++) {
+      // Serial.println(val[i]);
+      BTSerial.write((byte)val[i]);
+    }
+    Serial.println(val[0]);
+    // Serial.println(analogRead(front));
+    delay(40);
   }
-  delay(40);
 }
