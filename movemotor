@@ -1,0 +1,86 @@
+// 초록공 분류하기
+void green_ball() {
+  // 집게를 열어 공을 잡을 준비
+  motor3.write(110);
+  delay(1000);
+
+  // 공을 잡기 위해 집게를 내림
+  motor2.write(100);
+  delay(1000);
+
+  // 공을 잡은 후 집게를 닫음
+  motor3.write(90);
+  delay(1000);
+
+  // 공을 이동시키기 위해 집게를 회전
+  for (int i = 100; i < 145; i++) {
+    motor2.write(i);
+    delay(20);
+
+    // state polling
+    int ir_value = analogRead(ir_pin);
+    if (ir_value > 100) {
+      state = 1;
+    } else {
+      state = 0;
+    }
+  }
+
+  // 공을 이동시키기 위해 집게를 회전
+  for (int i = 145; i > 100; i--) {
+    motor2.write(i);
+    delay(20);
+
+    // state polling
+    ir_value = analogRead(ir_pin);
+    if (ir_value > 100) {
+      state = 1;
+    } else {
+      state = 0;
+    }
+  }
+
+  // 공을 이동시키기 위해 집게를 회전
+  for (int i = 50; i < 130; i++) {
+    motor1.write(i);
+    delay(20);
+
+    // state polling
+    ir_value = analogRead(ir_pin);
+    if (ir_value > 100) {
+      state = 1;
+    } else {
+      state = 0;
+    }
+  }
+
+  // 공을 이동시키기 위해 집게를 회전
+  for (int i = 100; i < 145; i++) {
+    motor2.write(i);
+    delay(20);
+
+    // state polling
+    ir_value = analogRead(ir_pin);
+    if (ir_value > 100) {
+      state = 1;
+    } else {
+      state = 0;
+    }
+  }
+
+  // 공을 잡을 준비
+  motor3.write(110);
+  delay(100);
+
+  // 공을 놓기 위해 집게를 열음
+  motor3.write(90);
+  delay(1000);
+
+  // 공을 놓은 후 집게를 닫음
+  motor2.write(100);
+  delay(1000);
+
+  // 집게를 닫음
+  motor3.write(90);
+  delay(1000);
+}
