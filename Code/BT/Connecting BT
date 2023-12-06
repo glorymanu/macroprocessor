@@ -21,3 +21,9 @@ void loop() {
     btSerial.write(transmitted);
   }
 }
+
+// AT+ORGL
+// AT+ROLE = 1
+// AT+ADDR
+// AT+BIND = 
+// AT+RESET
