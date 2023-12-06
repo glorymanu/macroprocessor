@@ -6,172 +6,114 @@ Servo shoulderDelt;
 Servo elbow;
 Servo grip;
 
-const int piezoPin = 12; // 피에조 부저 핀
-const int sensorPin = A0; // TCS3200 센서 출력 핀
-const int forcePin = A1; // 외부력 감지 센서 핀
+int s0=3,s1=4; //s0, S1 주파수 스케일 설정핀
+int s2=5,s3=6; //RGB 색감지 선택 설정핀
+int OutPut=2;
+long f_Red, f_Green, f_Blue;
 
-void setup() {
+void setup(){
+  shoulderFront.attach(11); // 11번핀 : 회전 제어 서보모터
+  shoulderSide.attach(12); // 12번핀 : 상하 제어 서보모터
+  shoulderDelt.attach(13); // 13번핀 : 집게 제어 서보모터
+  elbow.attach(14);
+  grip.attach(15);
+
+  shoulderFront.write(50);   //회전 제어 서보모터 초기값
+  shoulderSide.write(100); //상하 제어 서보모터 초기값
+  shoulderDelt.write(90);   //집게 제어 서보모터 초기값
+  elbow.write(90);
+  grip.write(10);
+
   Serial.begin(9600);
+  pinMode(s0, 1);
+  pinMode(s1, 1);
+  pinMode(s2, 1);
+  pinMode(s3, 1);
 
-  shoulderFront.attach(8);
-  shoulderSide.attach(9);
-  shoulderDelt.attach(10);
-  elbow.attach(11);
-  grip.attach(13);
-
-  pinMode(piezoPin, OUTPUT);
-  pinMode(forcePin, INPUT);
+  digitalWrite(s0,1);//주파수 스케일 100%
+  digitalWrite(s1,1);//주파수 스케일 100%
+  analogWrite(7,0);
+  pinMode(8, 2); //버튼 스위치
 }
 
-void loop() {
-  int red_light = analogRead(sensorPin);
-  delay(100); // 임의의 딜레이
-  int green_light = analogRead(sensorPin);
-  delay(100); // 임의의 딜레이
-  int blue_light = analogRead(sensorPin);
+void loop(){
 
-  Serial.print("빨간색: ");
-  Serial.print(red_light);
-  Serial.print(" 초록색: ");
-  Serial.print(green_light);
-  Serial.print(" 파란색: ");
-  Serial.println(blue_light);
+  analogWrite(7,255);
+  Serial.print("Red=");
+  digitalWrite(s2,0); //Red 감지 설정
+  digitalWrite(s3,0); //Red 감지 설정
+  f_Red = 1000000/pulseIn(OutPut, 1);// 빨간 빛을 감지해 출력된 주파수값
+  Serial.print(f_Red);
+  Serial.print(" ");
+  delay(200);
 
-  byte result = colorTest(red_light, green_light, blue_light);
+  Serial.print("Blue=");
+  digitalWrite(s2,0); //Blue 감지 설정
+  digitalWrite(s3,1); //Blue 감지 설정
+  f_Blue = 1000000/pulseIn(OutPut, 1);// 파란 빛을 감지해 출력된 주파수값
+  Serial.print(f_Blue);
+  Serial.print(" ");
+  delay(200);
 
-  Serial.print("색깔 결과 = ");
-  Serial.println(result);
+  Serial.print("Green=");
+  digitalWrite(s2,1); //Green 감지 설정
+  digitalWrite(s3,1); //Green 감지 설정
+  f_Green = 1200000/pulseIn(OutPut, 1);// 초록 빛을 감지해 출력된 주파수값
+  Serial.print(f_Green);
+  Serial.println(" ");
+  delay(200);
+  analogWrite(7,0);
 
-  if (result > 0) {
-    servoMove(result);
+  if (f_Red>f_Green && f_Red>f_Blue){
+    red_ball(); //빨간공 분류하기
+  }
+  if (f_Green>f_Red && f_Green>f_Blue){
+    green_ball(); //초록공 분류하기
+  }
+  if (f_Blue>f_Green && f_Blue>f_Red){
+    blue_ball(); //파란공 분류하기
   }
 
-  // 외부력 감지 시 경고음 울리기
-  if (externalForceDetected()) {
-    tone(piezoPin, 1000, 1000); // 피에조 부저로 1초 동안 경고음 울리기
-  }
-
-  delay(500);
 }
 
-byte colorTest(int red, int green, int blue) {
-  byte color = 0;
-
-  // 빨간색 물체
-  if (red > green && red > blue && red > 100) {
-    color = 1;
-  }
-
-  // 초록색 물체
-  if (green > red && green > blue && green > 100) {
-    color = 2;
-  }
-
-  // 파란색 물체
-  if (blue > red && blue > green && blue > 100) {
-    color = 3;
-  }
-
-  return color;
+void red_ball(){ //빨간공 분류하기(각도 값은 임의 조절 가능)
+  shoulderFront.write(110);delay(1000);
+  for (int i=100; i<145; i++){ shoulderSide.write(i);delay(20);}
+  shoulderFront.write(90);delay(1000);
+  for (int i=145; i>100; i--){ shoulderSide.write(i);delay(20);}
+  for (int i=50; i<100; i++){ shoulderFront.write(i);delay(20);}
+  for (int i=100; i<145; i++){ shoulderSide.write(i);delay(20);}
+  shoulderFront.write(110);delay(100);
+  shoulderFront.write(90);delay(1000);
+  shoulderSide.write(100);delay(1000);
+  shoulderFront.write(50);delay(1000);
 }
 
-
-void servoMove(byte color) {
-  // 색깔에 따른 로봇팔 제어 로직
-  // (서보 모터를 움직이는 부분)
-
-  // 예시:
-  if (color == 1) { // 빨간색
-    // 1. 팔을 뻗어 공을 집습니다.
-    shoulderFront.write(130);
-    shoulderSide.write(87);
-    shoulderDelt.write(330);
-    elbow.write(378);
-    grip.write(140);
-    delay(2000);
-
-    // 2. 공을 들어 올립니다.
-    shoulderFront.write(130);
-    shoulderSide.write(87);
-    shoulderDelt.write(330);
-    elbow.write(180);
-    delay(2000);
-
-    // 3. 공을 분류기 상단에 올려놓습니다.
-    shoulderFront.write(130);
-    shoulderSide.write(87);
-    shoulderDelt.write(330);
-    elbow.write(180);
-    delay(2000);
-
-    // 4. 팔을 내립니다.
-    shoulderFront.write(130);
-    shoulderSide.write(87);
-    shoulderDelt.write(330);
-    elbow.write(378);
-    delay(2000);
-
-    // 5. 공을 놓습니다.
-    grip.write(0);
-    delay(2000);
-  }
-
-
-    // 추가적으로 움직임이 필요한 경우 추가
-  } else if (color == 2) { // 초록색
-    // 다른 색깔에 대한 동작 추가
-  } else if (color == 3) { // 파란색
-    // 다른 색깔에 대한 동작 추가
-  }
-
-  // 각 서보 모터의 움직임 대기 시간
-  delay(2000);
-
-  // 움직임이 필요한 경우 추가
-
-  // 만약 물체를 제대로 잡았는지 확인
-  if (objectSuccessfullyGripped()) {
-    // 물체를 잘 잡았을 때의 추가 동작이나 처리
-  } else {
-    // 물체를 잡지 못했을 때의 추가 동작이나 처리
-    tone(piezoPin, 1000, 1000); // 실패 알림음
-    delay(1000);
-  }
-
-  // 완료 후 초기 위치로 되돌리기
-  shoulderFront.write(85); // 초기 위치로
-  shoulderSide.write(90);
-  shoulderDelt.write(45);
-  elbow.write(60);
-  grip.write(0);
-
-  // 초기 위치 대기 시간
-  delay(2000);
+void green_ball(){ //빨간공 분류하기(각도 값은 임의 조절 가능)
+  shoulderFront.write(110);delay(1000);
+  for (int i=100; i<145; i++){ shoulderSide.write(i);delay(20);}
+  shoulderFront.write(90);delay(1000);
+  for (int i=145; i>100; i--){ shoulderSide.write(i);delay(20);}
+  for (int i=50; i<100; i++){ shoulderFront.write(i);delay(20);}
+  for (int i=100; i<145; i++){ shoulderSide.write(i);delay(20);}
+  shoulderFront.write(110);delay(100);
+  shoulderFront.write(90);delay(1000);
+  shoulderSide.write(100);delay(1000);
+  shoulderFront.write(50);delay(1000);
 }
 
-bool objectSuccessfullyGripped() {
-  // 예상하는 집게 각도
-  int expectedGripAngle = 90; // 예시: 90도
-
-  // 현재 집게의 각도 읽기
-  int currentGripAngle = grip.read();
-
-  // 각도의 허용 범위 설정
-  int angleTolerance = 10; // 예시: 10도
-
-  // 현재 각도가 예상 범위 내에 있는지 확인
-  if (currentGripAngle >= (expectedGripAngle - angleTolerance) && 
-      currentGripAngle <= (expectedGripAngle + angleTolerance)) {
-    // 물체를 성공적으로 잡았다고 판단
-    return true;
-  } else {
-    // 물체를 잡지 못했다고 판단
-    return false;
-  }
+void blue_ball(){ //빨간공 분류하기(각도 값은 임의 조절 가능)
+  shoulderFront.write(110);delay(1000);
+  for (int i=100; i<145; i++){ shoulderSide.write(i);delay(20);}
+  shoulderFront.write(90);delay(1000);
+  for (int i=145; i>100; i--){ shoulderSide.write(i);delay(20);}
+  for (int i=50; i<100; i++){ shoulderFront.write(i);delay(20);}
+  for (int i=100; i<145; i++){ shoulderSide.write(i);delay(20);}
+  shoulderFront.write(110);delay(100);
+  shoulderFront.write(90);delay(1000);
+  shoulderSide.write(100);delay(1000);
+  shoulderFront.write(50);delay(1000);
 }
-
-bool externalForceDetected() {
-  // 외부력 감지 로직
   // (외부력을 감지하는 부분)
 
   // 예시: 가변저항의 값이 특정 범위를 벗어나면 외부력으로 간주
