@@ -50,6 +50,13 @@ void setup() {
   pinMode(pin_delt, OUTPUT);
   pinMode(pin_elbow, OUTPUT);
   pinMode(pin_gripper, OUTPUT);
+
+
+  front.write(90);
+  side.write(90);
+  delt.write(90);
+  elbow.write(90);
+  gripper.write(0);  //조립 후에 수정 필요
 }
 
 
@@ -59,7 +66,7 @@ void setup() {
 void moveMotor(int cur_val, int prev_val, Servo &name, int pin_name) {
   // 값을 ±4 이상의 변화에서만 모터가 작동되도록하여 떨림현상 제거(값 조정가능)
   if ((cur_val > prev_val + 4) | (cur_val < prev_val - 4)) {
-    name.write(cur_val);  
+    name.write(cur_val);
     prev_val = cur_val;
   }
 }
@@ -68,7 +75,7 @@ void moveMotor(int cur_val, int prev_val, Servo &name, int pin_name) {
 
 void loop() {
 
-  int val[NUM_OF_JOINT]= { 0, 0, 0, 0, 0 };
+  int val[NUM_OF_JOINT] = { 0, 0, 0, 0, 0 };
 
 
   if (BTSerial.available() >= NUM_OF_JOINT) {  // 5 바이트를 받아오기 위해 확인
@@ -92,5 +99,4 @@ void loop() {
   moveMotor(val[3], prev_elbow, elbow, pin_elbow);
   moveMotor(val[4], prev_gripper, gripper, pin_gripper);
   delay(40);
-
 }
