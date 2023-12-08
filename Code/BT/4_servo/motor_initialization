@@ -52,10 +52,10 @@ void loop() {
 
   // delay(1000);
 
-  front.write(90);
-  side.write(90);
-  delt.write(90);
-  elbow.write(90);
+  front.write(90); //deg = [0:120] 
+  side.write(90); // deg = [70:180]
+  delt.write(90); // deg = [0:180]
+  elbow.write(90); // deg = [60: 180]
   gripper.write(90);
 
   delay(1000);
@@ -68,3 +68,4 @@ void loop() {
 
   // delay(1000);
 }
+
