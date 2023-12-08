@@ -99,15 +99,42 @@ void red_ball(){ //빨간공 분류하기(각도 값은 임의 조절 가능)
  motor3.write(110);delay(1000);
  for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
  motor3.write(90);delay(1000);
- for (int i=145; i>100; i--){ motor2.write(i);delay(20);}
- for (int i=50; i<100; i++){ motor1.write(i);delay(20);}
- for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
+ for (int i=145; i>100; i--){
+  motor2.write(i);
+  delay(20);
+    // state polling
+    int ir_value = digitalRead(ir_pin);
+    if (ir_value == HIGH) {
+      state = 1;
+    } else {
+      state = 0;
+    }
+ }
+ for (int i=50; i<100; i++){ 
+  motor1.write(i);
+  delay(20);
+    // state polling
+    int ir_value = digitalRead(ir_pin);
+    if (ir_value == HIGH) {
+      state = 1;
+    } else {
+      state = 0;
+    }   
+ }
+ for (int i=100; i<145; i++){
+  motor2.write(i);
+  delay(20);
+    // state polling
+    int ir_value = digitalRead(ir_pin);
+    if (ir_value == HIGH) {
+      state = 1;
+    } else {
+      state = 0;
+    }  
+ }
  motor3.write(110);delay(100);
-
  motor3.write(90);delay(1000);
-
  motor2.write(100);delay(1000);
- // 사이사이에 state를 polling해주기
  motor1.write(50);delay(1000); 
 }
 
