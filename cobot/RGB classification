@@ -74,8 +74,8 @@ void loop(){
     }    
 
     // 적외선 센서 값으로 state 값 설정
-    int ir_value = analogRead(ir_pin);
-    if (ir_value > 100) {
+    int ir_value = digitalRead(ir_pin);
+    if (ir_value == HIGH) {
       state = 1;
     } else {
       state = 0;
