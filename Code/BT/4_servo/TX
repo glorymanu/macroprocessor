@@ -12,6 +12,9 @@
 
 #define pin_switch 7
 
+#define upper_limit 180
+#define lower_limit 0
+
 SoftwareSerial BTSerial(2, 3);  // BTSerial(Rx, Tx)
 
 
@@ -35,24 +38,47 @@ void loop() {
     int elbow_val = map(analogRead(elbow), 28, 830, 2, 178);
     int gripper_val = map(analogRead(gripper), 28, 830, 2, 178);
 
-if(front_val<0){
-  front_val = 0;
+
+//Lower limit 설정
+if(front_val<lower_limit){
+  front_val = lower_limit;
 }
-if(side_val<0){
-  side_val = 0;
-}
- 
- if(delt_val<0){
-  delt_val = 0;
+if(side_val<lower_limit){
+  side_val = lower_limit;
 }
  
- if(elbow_val<0){
-  elbow_val = 0;
+ if(delt_val<lower_limit){
+  delt_val = lower_limit;
 }
  
- if(gripper_val<0){
-  gripper_val = 0;
+ if(elbow_val<lower_limit){
+  elbow_val = lower_limit;
 }
+ 
+ if(gripper_val<lower_limit){
+  gripper_val = lower_limit;
+}
+
+if(front_val>upper_limit){
+  front_val = upper_limit;
+}
+if(side_val<upper_limit){
+  side_val = upper_limit;
+}
+ 
+ if(delt_val<upper_limit){
+  delt_val = upper_limit;
+}
+ 
+ if(elbow_val<upper_limit){
+  elbow_val = upper_limit;
+}
+ 
+ if(gripper_val<upper_limit){
+  gripper_val = upper_limit;
+}
+
+
  
     val[0] = front_val;
     val[1] = side_val;
