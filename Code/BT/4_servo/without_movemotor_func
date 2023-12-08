@@ -50,6 +50,13 @@ void setup() {
   pinMode(pin_delt, OUTPUT);
   pinMode(pin_elbow, OUTPUT);
   pinMode(pin_gripper, OUTPUT);
+
+  
+  front.write(90);
+  side.write(90);
+  delt.write(90);
+  elbow.write(90);
+  gripper.write(0); //조립 후에 수정 필요
 }
 
 
