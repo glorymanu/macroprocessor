@@ -38,48 +38,48 @@ void loop() {
     int elbow_val = map(analogRead(elbow), 28, 830, 2, 178);
     int gripper_val = map(analogRead(gripper), 28, 830, 2, 178);
 
+    //Lower limit 설정
+    if (front_val < lower_limit) {
+      front_val = lower_limit;
+    }
+    if (side_val < lower_limit) {
+      side_val = lower_limit;
+    }
 
-//Lower limit 설정
-if(front_val<lower_limit){
-  front_val = lower_limit;
-}
-if(side_val<lower_limit){
-  side_val = lower_limit;
-}
- 
- if(delt_val<lower_limit){
-  delt_val = lower_limit;
-}
- 
- if(elbow_val<lower_limit){
-  elbow_val = lower_limit;
-}
- 
- if(gripper_val<lower_limit){
-  gripper_val = lower_limit;
-}
+    if (delt_val < lower_limit) {
+      delt_val = lower_limit;
+    }
 
-if(front_val>upper_limit){
-  front_val = upper_limit;
-}
-if(side_val<upper_limit){
-  side_val = upper_limit;
-}
- 
- if(delt_val<upper_limit){
-  delt_val = upper_limit;
-}
- 
- if(elbow_val<upper_limit){
-  elbow_val = upper_limit;
-}
- 
- if(gripper_val<upper_limit){
-  gripper_val = upper_limit;
-}
+    if (elbow_val < lower_limit) {
+      elbow_val = lower_limit;
+    }
+
+    if (gripper_val < lower_limit) {
+      gripper_val = lower_limit;
+    }
+
+//upper limit 설정
+    if (front_val > upper_limit) {
+      front_val = upper_limit;
+    }
+    if (side_val > upper_limit) {
+      side_val = upper_limit;
+    }
+
+    if (delt_val > upper_limit) {
+      delt_val = upper_limit;
+    }
+
+    if (elbow_val > upper_limit) {
+      elbow_val = upper_limit;
+    }
+
+    if (gripper_val > upper_limit) {
+      gripper_val = upper_limit;
+    }
 
 
- 
+
     val[0] = front_val;
     val[1] = side_val;
     val[2] = elbow_val;
@@ -90,7 +90,7 @@ if(side_val<upper_limit){
       // Serial.println(val[i]);
       BTSerial.write((byte)val[i]);
     }
-    Serial.println(val[0]);
+    // Serial.println(delt_val);
     // Serial.println(analogRead(front));
     delay(40);
   }
