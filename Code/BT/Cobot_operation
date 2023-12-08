@@ -1,0 +1,82 @@
+#include <SoftwareSerial.h>
+
+#define pin_switch 13
+#define pin_led 12
+
+#define pin_ir 8  //ir input pin
+
+// color sensor input pin 설정
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(pin_switch, INPUT_PULLUP);  //Pull_up 저항 사용했다는 것에 유의
+  pinMode(pin_led, OUTPUT);
+  pinMode(pin_ir, INPUT);
+ 
+}
+
+void loop() {
+  digitalWrite(pin_led, LOW);
+  int state_switch = digitalRead(pin_switch);  //코봇 정지 스위치 켜졌는지 꺼졌는지 확인 - 0이 코봇 정지
+
+  //코봇 정지 신호가 없는 경우
+  if (state_switch == 1) {
+
+    //Color sensor에 물체가 인식되면 코봇이 집으러 가기
+    if () { //red 인식 시 작동 코드
+      //모터 작동 코드 (코봇이 물체를 집으러 가기)
+      //코봇이 물체를 집게 되는 동작 코드
+
+
+
+      //물체 놓으러 가는 모터 동작 코드
+
+      //놓으러 가는 각 스테이지 사이에 아래 코드 추가
+      int state_gripper = digitalRead(pin_ir);  //gripper에 물체가 있는지 없는지 확인
+      if (state_gripper == 1) {
+        digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
+      }
+      //물체 떨구지 않았으면 다음 동작 시행
+
+      //물체 놓기 완료
+    }
+
+
+      if () { //green 인식 시 작동 코드
+      //모터 작동 코드 (코봇이 물체를 집으러 가기)
+      //코봇이 물체를 집게 되는 동작 코드
+
+
+      //물체 놓으러 가는 모터 동작 코드
+
+      //놓으러 가는 각 스테이지 사이에 아래 코드 추가
+      int state_gripper = digitalRead(pin_ir);  //gripper에 물체가 있는지 없는지 확인
+      if (state_gripper == 1) {
+        digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
+      }
+      //물체 떨구지 않았으면 다음 동작 시행
+
+      //물체 놓기 완료
+    }
+
+
+      if () { //blue 인식 시 작동 코드
+      //모터 작동 코드 (코봇이 물체를 집으러 가기)
+      //코봇이 물체를 집게 되는 동작 코드
+
+
+      //물체 놓으러 가는 모터 동작 코드
+
+      //놓으러 가는 각 스테이지 사이에 아래 코드 추가
+      int state_gripper = digitalRead(pin_ir);  //gripper에 물체가 있는지 없는지 확인
+      if (state_gripper == 1) {
+        digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
+      }
+      //물체 떨구지 않았으면 다음 동작 시행
+
+      //물체 놓기 완료
+    }
+  }
+  delay(40);
+}
