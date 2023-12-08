@@ -1,0 +1,70 @@
+#include <SoftwareSerial.h>
+#include <Servo.h>
+
+
+//13
+//12
+//11
+//10 순으로 motor pin 연결, pwm pin인지 확인
+#define pin_front 13
+#define pin_side 12
+#define pin_delt 11
+#define pin_elbow 10
+#define pin_gripper 9
+
+
+SoftwareSerial BTSerial(2, 3);  // BTSerial(Rx, Tx)
+
+//servo object 생성
+Servo front;
+Servo side;
+Servo delt;
+Servo elbow;
+Servo gripper;
+
+void setup() {
+  Serial.begin(9600);
+  BTSerial.begin(38400);
+
+  front.attach(pin_front);
+  side.attach(pin_side);
+  delt.attach(pin_delt);
+  elbow.attach(pin_elbow);
+  gripper.attach(pin_gripper);
+
+  pinMode(pin_front, OUTPUT);
+  pinMode(pin_side, OUTPUT);
+  pinMode(pin_delt, OUTPUT);
+  pinMode(pin_elbow, OUTPUT);
+  pinMode(pin_gripper, OUTPUT);
+}
+
+
+
+
+void loop() {
+
+  // front.write(0);
+  // side.write(0);
+  // delt.write(0);
+  // elbow.write(0);
+  // gripper.write(0);
+
+  // delay(1000);
+
+  front.write(90);
+  side.write(90);
+  delt.write(90);
+  elbow.write(90);
+  gripper.write(90);
+
+  delay(1000);
+
+  // front.write(180);
+  // side.write(180);
+  // delt.write(180);
+  // elbow.write(180);
+  // gripper.write(180);
+
+  // delay(1000);
+}
