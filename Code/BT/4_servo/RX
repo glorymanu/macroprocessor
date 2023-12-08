@@ -87,12 +87,12 @@ void loop() {
     // 출력
     // Serial.print("Received values: ");
     for (int i = 0; i < NUM_OF_JOINT; i++) {
-      // Serial.print(val[i]);
-      // Serial.print(" ");
+      Serial.print(val[i]);
+      Serial.print(" ");
     }
-    // Serial.println();
+    Serial.println();
   }
-  // Serial.println(val[0]);
+  // Serial.println(val[1]);
   moveMotor(val[0], prev_front, front, pin_front);
   moveMotor(val[1], prev_side, side, pin_side);
   moveMotor(val[2], prev_delt, delt, pin_delt);
