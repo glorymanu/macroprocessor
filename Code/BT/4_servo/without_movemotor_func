@@ -1,0 +1,103 @@
+#include <SoftwareSerial.h>
+#include <Servo.h>
+
+
+//13
+//12
+//11
+//10 순으로 motor pin 연결, pwm pin인지 확인
+#define pin_front 13
+#define pin_side 12
+#define pin_delt 11
+#define pin_elbow 10
+#define pin_gripper 9
+
+#define NUM_OF_JOINT 5
+
+SoftwareSerial BTSerial(2, 3);  // BTSerial(Rx, Tx)
+
+//servo object 생성
+Servo front;
+Servo side;
+Servo delt;
+Servo elbow;
+Servo gripper;
+
+int cur_front = 0;
+int cur_side = 0;
+int cur_delt = 0;
+int cur_elbow = 0;
+int cur_gripper = 0;
+
+static int prev_front = 0;
+static int prev_side = 0;
+static int prev_delt = 0;
+static int prev_elbow = 0;
+static int prev_gripper = 0;
+
+void setup() {
+  Serial.begin(9600);
+  BTSerial.begin(38400);
+
+  front.attach(pin_front);
+  side.attach(pin_side);
+  delt.attach(pin_delt);
+  elbow.attach(pin_elbow);
+  gripper.attach(pin_gripper);
+
+  pinMode(pin_front, OUTPUT);
+  pinMode(pin_side, OUTPUT);
+  pinMode(pin_delt, OUTPUT);
+  pinMode(pin_elbow, OUTPUT);
+  pinMode(pin_gripper, OUTPUT);
+}
+
+
+
+
+//move motor 없애서 test
+// void moveMotor(int cur_val, int prev_val, Servo &name, int pin_name) {
+//   // 값을 ±4 이상의 변화에서만 모터가 작동되도록하여 떨림현상 제거(값 조정가능)
+//   if ((cur_val > prev_val + 4) | (cur_val < prev_val - 4)) {
+//     name.write(cur_val);
+//     prev_val = cur_val;
+//   }
+// }
+
+
+
+void loop() {
+
+  int val[NUM_OF_JOINT] = { 0, 0, 0, 0, 0 };
+
+
+  if (BTSerial.available() >= NUM_OF_JOINT) {  // 5 바이트를 받아오기 위해 확인
+
+    for (int i = 0; i < NUM_OF_JOINT; i++) {
+      val[i] = BTSerial.read();
+    }
+
+    // 출력
+    // Serial.print("Received values: ");
+    // for (int i = 0; i < NUM_OF_JOINT; i++) {
+    //   // Serial.print(val[i]);
+    //   // Serial.print(" ");
+    // }
+    // Serial.println();
+  }
+  // Serial.println(val[0]);
+  // moveMotor(val[0], prev_front, front, pin_front);
+  // moveMotor(val[1], prev_side, side, pin_side);
+  // moveMotor(val[2], prev_delt, delt, pin_delt);
+  // moveMotor(val[3], prev_elbow, elbow, pin_elbow);
+  // moveMotor(val[4], prev_gripper, gripper, pin_gripper);
+
+  front.write(val[0]);
+  side.write(val[1]);
+  delt.write(val[2]);
+  elbow.write(val[3]);
+  gripper.write(val[4]);
+
+
+  delay(40);
+}
