@@ -1,20 +1,24 @@
-#include <Servo.h> 
 #include <SoftwareSerial.h>
+#include <Servo.h>
 Servo motor1;
 Servo motor2;
 Servo motor3;
 
-SoftwareSerial btSerial(2, 3); //RX TX
 
-int s0=3,s1=4; //s0, S1 주파수 스케일 설정핀
-int s2=5,s3=6; //RGB 색감지 선택 설정핀
-int OutPut=2;
+#define pin_switch 13
+#define pin_led 9
+
+#define pin_ir 8  //ir input pin
+
+// color sensor input pin 설정
+#define s0 3 //s0, S1 주파수 스케일 설정핀
+#define s1 4
+#define s2 5 //RGB 색감지 선택 설정핀
+#define s3 6
+#define OutPut 2
 long f_Red, f_Green, f_Blue;
 
-int ir_pin = 7; // 적외선 센서 핀
-int state = 0; // 물체가 떨어졌는지 여부
-
-void setup(){
+void setup() {
   motor1.attach(11); // 11번핀 : 회전 제어 서보모터
   motor2.attach(12); // 12번핀 : 상하 제어 서보모터
   motor3.attach(13); // 13번핀 : 집게 제어 서보모터
@@ -23,20 +27,25 @@ void setup(){
   motor2.write(100); //상하 제어 서보모터 초기값
   motor3.write(90);  //집게 제어 서보모터 초기값
 
-    Serial.begin(9600);
-    btSerial.begin(38400);
-    pinMode(s0, 1);
-    pinMode(s1, 1);
-    pinMode(s2, 1);
-    pinMode(s3, 1);
-
-    digitalWrite(s0,1);//주파수 스케일 100%
-    digitalWrite(s1,1);//주파수 스케일 100%
-    analogWrite(7,0);
-    pinMode(8, 2); //버튼 스위치
+  Serial.begin(9600);
+  pinMode(s0, 1);//output
+  pinMode(s1, 1);
+  pinMode(s2, 1);
+  pinMode(s3, 1);
+  
+  digitalWrite(s0,1);//주파수 스케일 100%
+  digitalWrite(s1,1);//주파수 스케일 100%
+  analogWrite(7,0);
+  
+  pinMode(pin_switch, INPUT_PULLUP);  //Pull_up 저항 사용했다는 것에 유의
+  pinMode(pin_led, OUTPUT);
+  pinMode(pin_ir, INPUT);
+ 
 }
-void loop(){
 
+void loop() {
+
+  
     analogWrite(7,255);
     Serial.print("Red=");
     digitalWrite(s2,0); //Red 감지 설정
@@ -63,104 +72,117 @@ void loop(){
     delay(200);
     analogWrite(7,0);
 
-    if (f_Red>f_Green && f_Red>f_Blue){
-      red_ball(); //빨간공 분류하기
-    }
-    if (f_Green>f_Red && f_Green>f_Blue){
-      green_ball(); //초록공 분류하기
-    }
-    if (f_Blue>f_Green && f_Blue>f_Red){
-      blue_ball(); //파란공 분류하기
-    }    
 
-    // 적외선 센서 값으로 state 값 설정
-    int ir_value = digitalRead(ir_pin);
-    if (ir_value == HIGH) {
-      state = 1;
-    } else {
-      state = 0;
-    }
+  digitalWrite(pin_led, LOW);
+  int state_switch = digitalRead(pin_switch);  //코봇 정지 스위치 켜졌는지 꺼졌는지 확인 - 0이 코봇 정지
 
-    // state 값을 블루투스로 송신
-    
-    btSerial.println(state);
+  //코봇 정지 신호가 없는 경우
+  if (state_switch == 1) {
 
-    // 공이 떨어졌을 경우
-    if (state == 1) {
-      // 동작 정지
-      motor1.write(90);
-      motor2.write(100);
-      motor3.write(90);
+    //Color sensor에 물체가 인식되면 코봇이 집으러 가기
+    if (f_Red>f_Green && f_Red>f_Blue) { //red 인식 시 작동 코드
+      //모터 작동 코드 (코봇이 물체를 집으러 가기)
+      //코봇이 물체를 집게 되는 동작 코드
+     motor3.write(110);delay(1000); //집게닫기
+     for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
+     motor3.write(90);delay(1000);
+     for (int i=145; i>100; i--){motor2.write(i);delay(20);}
+    int state_gripper = digitalRead(pin_ir);  //gripper에 물체가 있는지 없는지 확인
+    if (state_gripper == 1) {
+      digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
     }
-        
-}
-
-void red_ball(){ //빨간공 분류하기(각도 값은 임의 조절 가능)
- motor3.write(110);delay(1000);
- for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
- motor3.write(90);delay(1000);
- for (int i=145; i>100; i--){
-  motor2.write(i);
-  delay(20);
-    // state polling
-    int ir_value = digitalRead(ir_pin);
-    if (ir_value == HIGH) {
-      state = 1;
-    } else {
-      state = 0;
+ 
+    for (int i=50; i<100; i++){  // 분류할 위치로 이동
+     motor1.write(i);
+     delay(20);
     }
- }
- for (int i=50; i<100; i++){ 
-  motor1.write(i);
-  delay(20);
-    // state polling
-    int ir_value = digitalRead(ir_pin);
-    if (ir_value == HIGH) {
-      state = 1;
-    } else {
-      state = 0;
+    if (state_gripper == 1) {
+      digitalWrite(pin_led, HIGH);  
     }   
- }
- for (int i=100; i<145; i++){
-  motor2.write(i);
-  delay(20);
-    // state polling
-    int ir_value = digitalRead(ir_pin);
-    if (ir_value == HIGH) {
-      state = 1;
-    } else {
-      state = 0;
-    }  
- }
- motor3.write(110);delay(100);
- motor3.write(90);delay(1000);
- motor2.write(100);delay(1000);
- motor1.write(50);delay(1000); 
+ 
+    for (int i=100; i<145; i++){
+     motor2.write(i);
+     delay(20); 
+    }
+    if (state_gripper == 1) {
+      digitalWrite(pin_led, HIGH);  
+    }
+    motor3.write(110);delay(100);
+    motor3.write(90);delay(1000);
+    motor2.write(100);delay(1000);
+    motor1.write(50);delay(1000); 
+  } //110 닫기 90 열기
+
+
+
+    //green 작동 코드
+if (f_Green>f_Red && f_Green>f_Blue) {
+  //모터 작동 코드 (코봇이 물체를 집으러 가기)
+  //코봇이 물체를 집게 되는 동작 코드
+  motor3.write(110);delay(1000);
+  for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
+  motor3.write(90);delay(1000);
+  for (int i=145; i>100; i--){motor2.write(i);delay(20);}
+  int state_gripper = digitalRead(pin_ir);  //gripper에 물체가 있는지 없는지 확인
+  if (state_gripper == 1) {
+    digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
+  }
+
+  for (int i=50; i<130; i++){ 
+    motor1.write(i);
+    delay(20);
+  }
+  if (state_gripper == 1) {
+    digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
+  }  
+
+  for (int i=100; i<145; i++){
+    motor2.write(i);
+    delay(20); 
+  }
+  if (state_gripper == 1) {
+    digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
+  }
+  motor3.write(110);delay(100);
+  motor3.write(90);delay(1000);
+  motor2.write(100);delay(1000);
+  motor1.write(50);delay(1000);
 }
 
-void green_ball(){ //초록공 분류하기(각도 값은 임의 조절 가능)
- motor3.write(110);delay(1000);
- for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
- motor3.write(90);delay(1000);
- for (int i=145; i>100; i--){ motor2.write(i);delay(20);}
- for (int i=50; i<130; i++){ motor1.write(i);delay(20);}
- for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
- motor3.write(110);delay(100);
- motor3.write(90);delay(1000);
- motor2.write(100);delay(1000);
- motor1.write(50);delay(1000); 
+//blue 작동 코드
+if (f_Blue>f_Green && f_Blue>f_Red) {
+  //모터 작동 코드 (코봇이 물체를 집으러 가기)
+  //코봇이 물체를 집게 되는 동작 코드
+  motor3.write(110);delay(1000);
+  for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
+  motor3.write(90);delay(1000);
+  for (int i=145; i>100; i--){ motor2.write(i);delay(20);}
+  int state_gripper = digitalRead(pin_ir);  //gripper에 물체가 있는지 없는지 확인
+  if (state_gripper == 1) {
+    digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
+  }
+
+  for (int i=50; i<160; i++){ 
+    motor1.write(i);
+    delay(20);
+  }
+  if (state_gripper == 1) {
+    digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
+  }  
+
+  for (int i=100; i<145; i++){
+    motor2.write(i);
+    delay(20); 
+  }
+  if (state_gripper == 1) {
+    digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
+  }
+  motor3.write(110);delay(100);
+  motor3.write(90);delay(1000);
+  motor2.write(100);delay(1000);
+  motor1.write(50);delay(1000);
 }
 
-void blue_ball(){ //파란공 분류하기(각도 값은 임의 조절 가능)
- motor3.write(110);delay(1000);
- for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
- motor3.write(90);delay(1000);
- for (int i=145; i>100; i--){ motor2.write(i);delay(20);}
- for (int i=50; i<160; i++){ motor1.write(i);delay(20);}
- for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
- motor3.write(110);delay(100);
- motor3.write(90);delay(1000);
- motor2.write(100);delay(1000);
- motor1.write(50);delay(1000);  
+  }
+  delay(40);
 }
-
