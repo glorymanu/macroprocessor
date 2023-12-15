@@ -23,9 +23,9 @@ void setup() {
   motor2.attach(12); // 12번핀 : 상하 제어 서보모터
   motor3.attach(13); // 13번핀 : 집게 제어 서보모터
 
-  motor1.write(50);  //회전 제어 서보모터 초기값
-  motor2.write(100); //상하 제어 서보모터 초기값
-  motor3.write(90);  //집게 제어 서보모터 초기값
+  motor1.write(60);  //회전 제어 서보모터 초기값
+  motor2.write(0);   //상하 제어 서보모터 초기값
+  motor3.write(68);  //집게 제어 서보모터 초기값
 
   Serial.begin(9600);
   pinMode(s0, 1);//output
