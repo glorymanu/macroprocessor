@@ -83,105 +83,115 @@ void loop() {
     if (f_Red>f_Green && f_Red>f_Blue) { //red 인식 시 작동 코드
       //모터 작동 코드 (코봇이 물체를 집으러 가기)
       //코봇이 물체를 집게 되는 동작 코드
-     motor3.write(110);delay(1000); //집게닫기
-     for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
-     motor3.write(90);delay(1000);
-     for (int i=145; i>100; i--){motor2.write(i);delay(20);}
-    int state_gripper = digitalRead(pin_ir);  //gripper에 물체가 있는지 없는지 확인
-    if (state_gripper == 1) {
-      digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
-    }
+     motor3.write(50);delay(1000); //집게열기
+     for (int i=0; i<33; i++){ motor2.write(i);delay(20);}
+     motor3.write(68);delay(1000);
+     for (int i=32; i>0; i--){
+      motor2.write(i);delay(20);
+      int state_gripper = digitalRead(pin_ir);  //gripper에 물체가 있는지 없는지 확인
+      if (state_gripper == 1) {
+        digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
+      }
+     }
+    
  
-    for (int i=50; i<100; i++){  // 분류할 위치로 이동
+     for (int i=60; i<81; i++){  // 분류할 위치로 이동
      motor1.write(i);
      delay(20);
-    }
-    if (state_gripper == 1) {
+     if (state_gripper == 1) {
       digitalWrite(pin_led, HIGH);  
-    }   
+     }   
+    }
+    
  
-    for (int i=100; i<145; i++){
-     motor2.write(i);
-     delay(20); 
-    }
-    if (state_gripper == 1) {
+    for (int i=0; i<33; i++){
+      motor2.write(i);delay(20); 
+    
+     if (state_gripper == 1) {
       digitalWrite(pin_led, HIGH);  
+     }
     }
-    motor3.write(110);delay(100);
-    motor3.write(90);delay(1000);
-    motor2.write(100);delay(1000);
-    motor1.write(50);delay(1000); 
-  } //110 닫기 90 열기
+    motor3.write(50);delay(100);//열기
+    motor3.write(68);delay(1000);//닫기
+    motor2.write(0);delay(1000);
+    motor1.write(60);delay(1000); 
+  } 
 
-
-
-    //green 작동 코드
-if (f_Green>f_Red && f_Green>f_Blue) {
-  //모터 작동 코드 (코봇이 물체를 집으러 가기)
-  //코봇이 물체를 집게 되는 동작 코드
-  motor3.write(110);delay(1000);
-  for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
-  motor3.write(90);delay(1000);
-  for (int i=145; i>100; i--){motor2.write(i);delay(20);}
-  int state_gripper = digitalRead(pin_ir);  //gripper에 물체가 있는지 없는지 확인
-  if (state_gripper == 1) {
-    digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
+    if (f_Green>f_Red && f_Green>f_Blue) { //green 인식 시 작동 코드
+      //모터 작동 코드 (코봇이 물체를 집으러 가기)
+      //코봇이 물체를 집게 되는 동작 코드
+     motor3.write(50);delay(1000); //집게열기
+     for (int i=0; i<33; i++){ motor2.write(i);delay(20);}
+     motor3.write(68);delay(1000);
+     for (int i=32; i>0; i--){
+      motor2.write(i);delay(20);
+      int state_gripper = digitalRead(pin_ir);  //gripper에 물체가 있는지 없는지 확인
+      if (state_gripper == 1) {
+        digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
+      }
+     }
+    
+ 
+     for (int i=60; i<81; i++){  // 분류할 위치로 이동 각도교체!!!!
+     motor1.write(i);
+     delay(20);
+     if (state_gripper == 1) {
+      digitalWrite(pin_led, HIGH);  
+     }   
+    }
+    
+ 
+    for (int i=0; i<33; i++){
+      motor2.write(i);delay(20); 
+    
+     if (state_gripper == 1) {
+      digitalWrite(pin_led, HIGH);  
+     }
+    }
+    motor3.write(50);delay(100);//열기
+    motor3.write(68);delay(1000);//닫기
+    motor2.write(0);delay(1000);
+    motor1.write(60);delay(1000); 
   }
 
-  for (int i=50; i<130; i++){ 
-    motor1.write(i);
-    delay(20);
+    if (f_Blue>f_Green && f_Blue>f_Red) { //blue 인식 시 작동 코드
+      //모터 작동 코드 (코봇이 물체를 집으러 가기)
+      //코봇이 물체를 집게 되는 동작 코드
+     motor3.write(50);delay(1000); //집게열기
+     for (int i=0; i<33; i++){ motor2.write(i);delay(20);}
+     motor3.write(68);delay(1000);
+     for (int i=32; i>0; i--){
+      motor2.write(i);delay(20);
+      int state_gripper = digitalRead(pin_ir);  //gripper에 물체가 있는지 없는지 확인
+      if (state_gripper == 1) {
+        digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
+      }
+     }
+    
+ 
+     for (int i=60; i<81; i++){  // 분류할 위치로 이동 각도교체!!!!
+     motor1.write(i);
+     delay(20);
+     if (state_gripper == 1) {
+      digitalWrite(pin_led, HIGH);  
+     }   
+    }
+    
+ 
+    for (int i=0; i<33; i++){
+      motor2.write(i);delay(20); 
+    
+     if (state_gripper == 1) {
+      digitalWrite(pin_led, HIGH);  
+     }
+    }
+    motor3.write(50);delay(100);//열기
+    motor3.write(68);delay(1000);//닫기
+    motor2.write(0);delay(1000);
+    motor1.write(60);delay(1000); 
   }
-  if (state_gripper == 1) {
-    digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
-  }  
 
-  for (int i=100; i<145; i++){
-    motor2.write(i);
-    delay(20); 
-  }
-  if (state_gripper == 1) {
-    digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
-  }
-  motor3.write(110);delay(100);
-  motor3.write(90);delay(1000);
-  motor2.write(100);delay(1000);
-  motor1.write(50);delay(1000);
-}
 
-//blue 작동 코드
-if (f_Blue>f_Green && f_Blue>f_Red) {
-  //모터 작동 코드 (코봇이 물체를 집으러 가기)
-  //코봇이 물체를 집게 되는 동작 코드
-  motor3.write(110);delay(1000);
-  for (int i=100; i<145; i++){ motor2.write(i);delay(20);}
-  motor3.write(90);delay(1000);
-  for (int i=145; i>100; i--){ motor2.write(i);delay(20);}
-  int state_gripper = digitalRead(pin_ir);  //gripper에 물체가 있는지 없는지 확인
-  if (state_gripper == 1) {
-    digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
-  }
-
-  for (int i=50; i<160; i++){ 
-    motor1.write(i);
-    delay(20);
-  }
-  if (state_gripper == 1) {
-    digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
-  }  
-
-  for (int i=100; i<145; i++){
-    motor2.write(i);
-    delay(20); 
-  }
-  if (state_gripper == 1) {
-    digitalWrite(pin_led, HIGH);  //물체 떨구면 led 켜지게
-  }
-  motor3.write(110);delay(100);
-  motor3.write(90);delay(1000);
-  motor2.write(100);delay(1000);
-  motor1.write(50);delay(1000);
-}
 
   }
   delay(40);
