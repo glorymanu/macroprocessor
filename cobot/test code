@@ -1,0 +1,51 @@
+#include <Servo.h>
+Servo motor1;
+Servo motor2;
+Servo motor3;
+
+void setup() {
+  motor1.attach(11); // 11번핀 : 회전 제어 서보모터
+  motor2.attach(12); // 12번핀 : 상하 제어 서보모터
+  motor3.attach(13); // 13번핀 : 집게 제어 서보모터
+
+  motor1.write(60); //회전 제어 서보모터 초기값
+  motor2.write(0); //상하 제어 서보모터 초기값
+  motor3.write(60); //집게 제어 서보모터 초기값
+
+  Serial.begin(9600);
+}
+
+void loop() {
+  // 코봇 정지 신호가 없는 경우
+  
+    motor2.write(32);  //내리기
+    delay(1000);
+
+    // 집게 닫기
+    motor3.write(68);
+    delay(1000);
+
+    
+    motor2.write(0);  //올리기
+    delay(1000);
+    motor1.write(80);
+    delay(1000);
+    motor3.write(50);
+    delay(1000);
+    motor1.write(60);
+    delay(1000);
+    motor2.write(32); 
+    delay(1000);
+
+
+    
+    motor3.write(50);
+    delay(1000);
+
+    motor3.write(68);
+    delay(1000);
+
+  
+    
+
+}
