@@ -1,9 +1,9 @@
 #include <SoftwareSerial.h>
 
-// pushbutton code 추가
+// 저항
 
-#define front A0
-#define side A1
+#define front A1
+#define side A0
 #define delt A2
 #define elbow A3
 #define gripper A4
@@ -12,8 +12,24 @@
 
 #define pin_switch 7
 
+#define front_upper_limit 120
+#define front_lower_limit 49
+
+#define side_upper_limit 180
+#define side_lower_limit 82
+
+#define delt_upper_limit 147
+#define delt_lower_limit 50
+
+#define elbow_upper_limit 125
+#define elbow_lower_limit 40
+
 #define upper_limit 180
 #define lower_limit 0
+
+#define scaler 1.3
+
+#define front_scaler 1.6
 
 SoftwareSerial BTSerial(2, 3);  // BTSerial(Rx, Tx)
 
@@ -29,7 +45,7 @@ void loop() {
   int val[NUM_JOINT] = { 0, 0, 0, 0, 0 };
   int state = digitalRead(pin_switch);
 
-  if (state == 0) {  //;로도 해보기
+  if (state == 0) {
 
     // Serial.println(state);
     int front_val = map(analogRead(front), 28, 830, 2, 178);  //서보모터 각도(0~180도)
@@ -38,40 +54,46 @@ void loop() {
     int elbow_val = map(analogRead(elbow), 28, 830, 2, 178);
     int gripper_val = map(analogRead(gripper), 28, 830, 2, 178);
 
+    front_val = 90 + front_scaler * (front_val - 90);
+    side_val = 90 + scaler * (side_val - 90);
+    delt_val = 90 + scaler * (delt_val - 90);
+    elbow_val = 90 + scaler * (elbow_val - 90);
+
+
     //Lower limit 설정
-    if (front_val < lower_limit) {
-      front_val = lower_limit;
+    if (front_val < front_lower_limit) {
+      front_val = front_lower_limit;
     }
-    if (side_val < lower_limit) {
-      side_val = lower_limit;
-    }
-
-    if (delt_val < lower_limit) {
-      delt_val = lower_limit;
+    if (side_val < side_lower_limit) {
+      side_val = side_lower_limit;
     }
 
-    if (elbow_val < lower_limit) {
-      elbow_val = lower_limit;
+    if (delt_val < delt_lower_limit) {
+      delt_val = delt_lower_limit;
+    }
+
+    if (elbow_val < elbow_lower_limit) {
+      elbow_val = elbow_lower_limit;
     }
 
     if (gripper_val < lower_limit) {
       gripper_val = lower_limit;
     }
 
-//upper limit 설정
-    if (front_val > upper_limit) {
-      front_val = upper_limit;
+    //upper limit 설정
+    if (front_val > front_upper_limit) {
+      front_val = front_upper_limit;
     }
-    if (side_val > upper_limit) {
-      side_val = upper_limit;
-    }
-
-    if (delt_val > upper_limit) {
-      delt_val = upper_limit;
+    if (side_val > side_upper_limit) {
+      side_val = side_upper_limit;
     }
 
-    if (elbow_val > upper_limit) {
-      elbow_val = upper_limit;
+    if (delt_val > delt_upper_limit) {
+      delt_val = delt_upper_limit;
+    }
+
+    if (elbow_val > elbow_upper_limit) {
+      elbow_val = elbow_upper_limit;
     }
 
     if (gripper_val > upper_limit) {
@@ -79,19 +101,29 @@ void loop() {
     }
 
 
+    //배선때문에 바꿈
 
     val[0] = front_val;
     val[1] = side_val;
-    val[2] = elbow_val;
-    val[3] = delt_val;
-    val[4] = gripper_val;
+    val[2] = delt_val;
+    val[3] = elbow_val;
+    val[4] = 180-gripper_val;
+
+    // val[0] = front_val * scaler;
+    // val[1] = side_val * scaler;
+    // val[2] = delt_val * scaler;
+    // val[3] = elbow_val * scaler;
+    // val[4] = gripper_val * scaler;
 
     for (int i = 0; i < NUM_JOINT; i++) {
       // Serial.println(val[i]);
       BTSerial.write((byte)val[i]);
     }
+
+    // Serial.println(front_val);
+    // Serial.println(side_val);
     // Serial.println(delt_val);
-    // Serial.println(analogRead(front));
+    Serial.println(elbow_val);
     delay(40);
   }
 }
