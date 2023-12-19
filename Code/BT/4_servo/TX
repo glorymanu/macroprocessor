@@ -1,3 +1,4 @@
+//TX
 #include <SoftwareSerial.h>
 
 // 저항
@@ -13,7 +14,7 @@
 #define pin_switch 7
 
 #define front_upper_limit 120
-#define front_lower_limit 49
+#define front_lower_limit 30
 
 #define side_upper_limit 180
 #define side_lower_limit 82
@@ -55,7 +56,7 @@ void loop() {
     int gripper_val = map(analogRead(gripper), 28, 830, 2, 178);
 
     front_val = 90 + front_scaler * (front_val - 90);
-    side_val = 90 + scaler * (side_val - 90);
+    side_val = 70 + scaler * (side_val - 90);
     delt_val = 90 + scaler * (delt_val - 90);
     elbow_val = 90 + scaler * (elbow_val - 90);
 
