@@ -26,9 +26,14 @@ void setup(){
     digitalWrite(s1,1);//주파수 스케일 100%
     analogWrite(7,0);
     pinMode(8, 2); //버튼 스위치
+    pinMode(9, 2); //정지 스위치
+
 }
 void loop(){
+int pin8 = digitalRead(8);
+    if (pin8 == 0){
 
+    //while (digitalRead(9) == 1){
     analogWrite(7,255);
     Serial.print("Red=");
     digitalWrite(s2,0); //Red 감지 설정
@@ -63,17 +68,25 @@ void loop(){
     }
     if (f_Blue>f_Green && f_Blue>f_Red){
       blue_ball(); //파란공 분류하기
-    }    
-        
+    }
+       
+  
+
+    
+    
+    
 }
+}
+
+
 
 void red_ball(){ //빨간공 분류하기(각도 값은 임의 조절 가능)
  motor3.write(50);delay(1000);
- for (int i=0; i<33; i++){ motor2.write(i);delay(20);}
+ for (int i=0; i<31; i++){ motor2.write(i);delay(20);}
  motor3.write(68);delay(1000);
- for (int i=32; i>0; i--){ motor2.write(i);delay(20);}
- for (int i=60; i<81; i++){ motor1.write(i);delay(20);}
- for (int i=0; i<33; i++){ motor2.write(i);delay(20);}
+ for (int i=30; i>0; i--){ motor2.write(i);delay(20);}
+ for (int i=60; i<138; i++){ motor1.write(i);delay(20);}
+ for (int i=0; i<11; i++){ motor2.write(i);delay(20);}
  motor3.write(50);delay(100);
  motor3.write(68);delay(1000);
  motor2.write(0);delay(1000);
@@ -82,11 +95,11 @@ void red_ball(){ //빨간공 분류하기(각도 값은 임의 조절 가능)
 
 void green_ball(){ //초록공 분류하기(각도 값은 임의 조절 가능)
  motor3.write(50);delay(1000);
- for (int i=0; i<33; i++){ motor2.write(i);delay(20);}
+ for (int i=0; i<31; i++){ motor2.write(i);delay(20);}
  motor3.write(68);delay(1000);
- for (int i=32; i>0; i--){ motor2.write(i);delay(20);}
- for (int i=60; i<91; i++){ motor1.write(i);delay(20);}
- for (int i=0; i<33; i++){ motor2.write(i);delay(20);}
+ for (int i=30; i>0; i--){ motor2.write(i);delay(20);}
+ for (int i=60; i<121; i++){ motor1.write(i);delay(20);}
+ for (int i=0; i<11; i++){ motor2.write(i);delay(20);}
  motor3.write(50);delay(100);
  motor3.write(68);delay(1000);
  motor2.write(0);delay(1000);
@@ -96,11 +109,11 @@ void green_ball(){ //초록공 분류하기(각도 값은 임의 조절 가능)
 
 void blue_ball(){ //파란공 분류하기(각도 값은 임의 조절 가능)
  motor3.write(50);delay(1000);
- for (int i=0; i<33; i++){ motor2.write(i);delay(20);}
+ for (int i=0; i<31; i++){ motor2.write(i);delay(20);}
  motor3.write(68);delay(1000);
- for (int i=32; i>0; i--){ motor2.write(i);delay(20);}
+ for (int i=30; i>0; i--){ motor2.write(i);delay(20);}
  for (int i=60; i<101; i++){ motor1.write(i);delay(20);}
- for (int i=0; i<33; i++){ motor2.write(i);delay(20);}
+ for (int i=0; i<11; i++){ motor2.write(i);delay(20);}
  motor3.write(50);delay(100);
  motor3.write(68);delay(1000);
  motor2.write(0);delay(1000);
