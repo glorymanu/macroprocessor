@@ -32,6 +32,10 @@
 
 #define front_scaler 1.6
 
+#define delt_scaler 1.5
+
+#define elbow_scaler 1.6
+
 SoftwareSerial BTSerial(2, 3);  // BTSerial(Rx, Tx)
 
 
@@ -57,8 +61,8 @@ void loop() {
 
     front_val = 90 + front_scaler * (front_val - 90);
     side_val = 70 + scaler * (side_val - 90);
-    delt_val = 90 + scaler * (delt_val - 90);
-    elbow_val = 90 + scaler * (elbow_val - 90);
+    delt_val = 90 + delt_scaler * (delt_val - 90);
+    elbow_val = 90 + elbow_scaler * (elbow_val - 90);
 
 
     //Lower limit 설정
