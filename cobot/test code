@@ -1,51 +1,108 @@
-#include <Servo.h>
-Servo motor1;
-Servo motor2;
-Servo motor3;
+#include <Servo.h> 
+Servo motor1; // 회전 제어 서보모터
+Servo motor2; // 상하 제어 서보모터
+Servo motor3; // 집게 제어 서보모터
 
-void setup() {
+int s0=3,s1=4; //s0, S1 주파수 스케일 설정핀
+int s2=5,s3=6; //RGB 색감지 선택 설정핀
+int OutPut=2;
+long f_Red, f_Green, f_Blue;
+void setup(){
   motor1.attach(11); // 11번핀 : 회전 제어 서보모터
   motor2.attach(12); // 12번핀 : 상하 제어 서보모터
   motor3.attach(13); // 13번핀 : 집게 제어 서보모터
 
-  motor1.write(60); //회전 제어 서보모터 초기값
+  motor1.write(60);  //회전 제어 서보모터 초기값
   motor2.write(0); //상하 제어 서보모터 초기값
-  motor3.write(60); //집게 제어 서보모터 초기값
+  motor3.write(68);  //집게 제어 서보모터 초기값
 
-  Serial.begin(9600);
+    Serial.begin(9600);
+    pinMode(s0, 1);
+    pinMode(s1, 1);
+    pinMode(s2, 1);
+    pinMode(s3, 1);
+
+    digitalWrite(s0,1);//주파수 스케일 100%
+    digitalWrite(s1,1);//주파수 스케일 100%
+    analogWrite(7,0);
+    pinMode(8, 2); //버튼 스위치
+}
+void loop(){
+
+    analogWrite(7,255);
+    Serial.print("Red=");
+    digitalWrite(s2,0); //Red 감지 설정
+    digitalWrite(s3,0); //Red 감지 설정
+    f_Red = 1000000/pulseIn(OutPut, 1);// 빨간 빛을 감지해 출력된 주파수값
+    Serial.print(f_Red);
+    Serial.print("  ");
+    delay(200);
+
+    Serial.print("Blue=");
+    digitalWrite(s2,0); //Blue 감지 설정
+    digitalWrite(s3,1); //Blue 감지 설정
+    f_Blue = 1000000/pulseIn(OutPut, 1);// 파란 빛을 감지해 출력된 주파수값
+    Serial.print(f_Blue);
+    Serial.print("  ");
+    delay(200);
+
+    Serial.print("Green=");
+    digitalWrite(s2,1); //Green 감지 설정
+    digitalWrite(s3,1); //Green 감지 설정
+    f_Green = 1200000/pulseIn(OutPut, 1);// 초록 빛을 감지해 출력된 주파수값
+    Serial.print(f_Green);
+    Serial.println("  ");
+    delay(200);
+    analogWrite(7,0);
+
+    if (f_Red>f_Green && f_Red>f_Blue){
+      red_ball(); //빨간공 분류하기
+    }
+    if (f_Green>f_Red && f_Green>f_Blue){
+      green_ball(); //초록공 분류하기
+    }
+    if (f_Blue>f_Green && f_Blue>f_Red){
+      blue_ball(); //파란공 분류하기
+    }    
+        
 }
 
-void loop() {
-  // 코봇 정지 신호가 없는 경우
-  
-    motor2.write(32);  //내리기
-    delay(1000);
+void red_ball(){ //빨간공 분류하기(각도 값은 임의 조절 가능)
+ motor3.write(50);delay(1000);
+ for (int i=0; i<33; i++){ motor2.write(i);delay(20);}
+ motor3.write(68);delay(1000);
+ for (int i=32; i>0; i--){ motor2.write(i);delay(20);}
+ for (int i=60; i<81; i++){ motor1.write(i);delay(20);}
+ for (int i=0; i<33; i++){ motor2.write(i);delay(20);}
+ motor3.write(50);delay(100);
+ motor3.write(68);delay(1000);
+ motor2.write(0);delay(1000);
+ motor1.write(60);delay(1000); 
+}
 
-    // 집게 닫기
-    motor3.write(68);
-    delay(1000);
-
-    
-    motor2.write(0);  //올리기
-    delay(1000);
-    motor1.write(80);
-    delay(1000);
-    motor3.write(50);
-    delay(1000);
-    motor1.write(60);
-    delay(1000);
-    motor2.write(32); 
-    delay(1000);
+void green_ball(){ //초록공 분류하기(각도 값은 임의 조절 가능)
+ motor3.write(50);delay(1000);
+ for (int i=0; i<33; i++){ motor2.write(i);delay(20);}
+ motor3.write(68);delay(1000);
+ for (int i=32; i>0; i--){ motor2.write(i);delay(20);}
+ for (int i=60; i<91; i++){ motor1.write(i);delay(20);}
+ for (int i=0; i<33; i++){ motor2.write(i);delay(20);}
+ motor3.write(50);delay(100);
+ motor3.write(68);delay(1000);
+ motor2.write(0);delay(1000);
+ motor1.write(60);delay(1000); 
+}
 
 
-    
-    motor3.write(50);
-    delay(1000);
-
-    motor3.write(68);
-    delay(1000);
-
-  
-    
-
+void blue_ball(){ //파란공 분류하기(각도 값은 임의 조절 가능)
+ motor3.write(50);delay(1000);
+ for (int i=0; i<33; i++){ motor2.write(i);delay(20);}
+ motor3.write(68);delay(1000);
+ for (int i=32; i>0; i--){ motor2.write(i);delay(20);}
+ for (int i=60; i<101; i++){ motor1.write(i);delay(20);}
+ for (int i=0; i<33; i++){ motor2.write(i);delay(20);}
+ motor3.write(50);delay(100);
+ motor3.write(68);delay(1000);
+ motor2.write(0);delay(1000);
+ motor1.write(60);delay(1000); 
 }
